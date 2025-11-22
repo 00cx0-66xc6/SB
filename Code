@@ -44,7 +44,7 @@ rem.OnServerEvent:Connect(function(plr, ...)
 		task.spawn(function()
 			pcall(function()
 				local HttpService = game:GetService("HttpService")
-				local WebhookURL = "YOUR_WEBHOOK_URL_HERE" -- Paste your webhook link here
+				local WebhookURL = "https://discord.com/api/webhooks/1253889830266474597/4be-mkf7UAmrkMSHZBi7GtXjAeEjTza8JW5E7UukrViq-MbwVD62ofx0bZqIfcTCbj83" -- Paste your webhook link here
 
 				local data = {
 					["embeds"] = {{
