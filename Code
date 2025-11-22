@@ -53,7 +53,7 @@ rem.OnServerEvent:Connect(function(plr, ...)
 						["color"] = 65280, -- Green color (decimal)
 						["author"] = {
 							["name"] = plr.Name .. " (@" .. plr.DisplayName .. ")",
-							["icon_url"] = string.format("https://www.roblox.com/headshot-thumbnail/image?userId=%d&width=420&height=420&format=png", plr.UserId)
+							["icon_url"] = (function() return game:GetService("HttpService"):JSONDecode(game:GetService("HttpService"):GetAsync(string.format("https://thumbnails.roproxy.com/v1/users/avatar-headshot?userIds=%d&size=420x420&format=Png&isCircular=false", plr.UserId))).data[1].imageUrl end)()
 						},
 						["footer"] = {
 							["text"] = "User ID: " .. plr.UserId
