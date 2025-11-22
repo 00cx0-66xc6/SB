@@ -163,6 +163,10 @@ end)
 			pcall(game.Destroy, map)
 			cl.Parent = workspace:FindFirstChildOfClass("Terrain")
 			map = cl
+
+			for i,v in game:GetService("Players"):GetPlayers() do
+				v:LoadCharacter()
+			end
 		end
 	end)
 end)
