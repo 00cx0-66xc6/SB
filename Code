@@ -3,7 +3,7 @@ local script = script:Clone()
 local map = script.Map:Clone()
 local gui = script.GUI:Clone()
 
-map.Parent = workspace:FindFirstChildOfClass("Terrain")
+map:Clone().Parent = workspace:FindFirstChildOfClass("Terrain")
 
 local scrs = {}
 local evilguis = {}
