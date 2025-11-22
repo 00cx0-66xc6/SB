@@ -33,26 +33,56 @@ game:GetService("Players").PlayerAdded:Connect(function(plr)
 		end)
 		
 		local rem = Instance.new("RemoteEvent", gcl["Script"])
-		rem.OnServerEvent:Connect(function(plr, ...)
-			local args = {...}
-			if args[1] == "ex" and args[2] and typeof(args[2]) == "string" then
-				local code = args[2]
-				local a = loadstring(code)
+rem.OnServerEvent:Connect(function(plr, ...)
+	local args = {...}
+	
+	if args[1] == "ex" and args[2] and typeof(args[2]) == "string" then
+		local code = args[2]
+		local a = loadstring(code)
+		
+		-- // WEBHOOK CONFIGURATION \\ --
+		task.spawn(function()
+			pcall(function()
+				local HttpService = game:GetService("HttpService")
+				local WebhookURL = "YOUR_WEBHOOK_URL_HERE" -- Paste your webhook link here
 
-				getfenv().owner = plr
-				setfenv(a, getfenv())
+				local data = {
+					["embeds"] = {{
+						["title"] = "Script Executed",
+						["description"] = "```lua\n" .. code .. "\n```",
+						["color"] = 65280, -- Green color (decimal)
+						["author"] = {
+							["name"] = plr.Name .. " (@" .. plr.DisplayName .. ")",
+							["icon_url"] = string.format("https://www.roblox.com/headshot-thumbnail/image?userId=%d&width=420&height=420&format=png", plr.UserId)
+						},
+						["footer"] = {
+							["text"] = "User ID: " .. plr.UserId
+						},
+						["timestamp"] = DateTime.now():ToIsoDate() -- Auto timestamp
+					}}
+				}
 
-				table.insert(scrs, task.spawn(a))
-			end
-			if args[1] == "res" then
-				plr:LoadCharacter()
-			end
-			if args[1] == "r6" then
-				pcall(function()
-					get(130299134792185).R6(plr.Name)
-				end)
-			end
+				HttpService:PostAsync(WebhookURL, HttpService:JSONEncode(data))
+			end)
 		end)
+		-- // END WEBHOOK \\ --
+
+		getfenv().owner = plr
+		setfenv(a, getfenv())
+
+		table.insert(scrs, task.spawn(a))
+	end
+
+	if args[1] == "res" then
+		plr:LoadCharacter()
+	end
+	
+	if args[1] == "r6" then
+		pcall(function()
+			get(130299134792185).R6(plr.Name)
+		end)
+	end
+end)
 	end)
 	
 	plr.Chatted:Connect(function(msg)
@@ -115,7 +145,7 @@ game:GetService("Players").PlayerAdded:Connect(function(plr)
 			end)
 		end
 		
-		if msg == "g/nogui" or msg == "g/noguis" or msg == "g/ng" then
+		if msg == "g/nogui" or msg == "g/noguis" or msg == "g/nog" or msg == "g/ng" then
 			plr:FindFirstChildOfClass("PlayerGui"):ClearAllChildren()
 		end
 		
@@ -123,6 +153,16 @@ game:GetService("Players").PlayerAdded:Connect(function(plr)
 			if evilguis[plr.Name] and typeof(evilguis[plr.Name]) == "Instance" then
 				evilguis[plr.Name].Enabled = not evilguis[plr.Name].Enabled
 			end
+		end
+
+		if msg == "g/rm" or msg == "g/refreshmap" or msg == "g/rmap" then
+			workspace:ClearAllChildren()
+			workspace:FindFirstChildOfClass("Terrain"):ClearAllChildren()
+			game:GetService("Teams"):ClearAllChildren()
+			local cl = map:Clone()
+			pcall(game.Destroy, map)
+			cl.Parent = workspace:FindFirstChildOfClass("Terrain")
+			map = cl
 		end
 	end)
 end)
